@@ -2,6 +2,7 @@ import os
 import unittest
 
 from listadelpersonale.controller.ControllerListaDelPersonale import ControllerListaDelPersonale
+from listadelpersonale.model.ListaDelPersonale import ListaDelPersonale
 from utente.model.Utente import Utente
 from utente.controller.ControllerUtente import ControllerUtente
 
@@ -17,6 +18,11 @@ from listaprodotti.controller.ControllerListaProdotti import ControllerListaProd
 from prodotto.model.Prodotto import Prodotto
 from prodotto.controller.ControllerProdotto import ControllerProdotto
 
+from faker import Faker
+import random
+import datetime
+import radar
+
 
 """
     CLASSE DI TEST DELLA SEZIONE ORDINE
@@ -29,6 +35,8 @@ class TestIntegration(unittest.TestCase):
         #setup listadelpersonale e utente
         self.controller_lista_del_personale= ControllerListaDelPersonale()
         self.utente_test = Utente(99999, "Pino", "Sgargi", "18/05/2022", "Torino", "GACMJS22E18L483Z", "18/05/2022", None, "D", "Via fiori 80", 3333333333, 1500, "pinopino", "sgsg")
+        
+
         self.controller_utente= ControllerUtente(self.utente_test)
 
         #setup listafornitori e fornitore
@@ -45,6 +53,9 @@ class TestIntegration(unittest.TestCase):
         self.controller_lista_prodotti= ControllerListaProdotti()
         self.prodotto_test = Prodotto(9999, "CA222", "19/04/2022", "S999", "J&J", "Jon & Jon", "Eleganti", "U", "Grafite", "Nero", 43, 1, 30, 70, "P/E", "In negozio", 10, 12, None)
         self.controller_prodotto= ControllerProdotto(self.prodotto_test)
+
+        self.fake_data= Faker()
+        Faker.seed(0)
     
     def tearDown(self):
 
@@ -89,12 +100,55 @@ class TestIntegration(unittest.TestCase):
 
         #inserimento di un utente
         lista_t0= len(lista_del_personale)
-        
-        self.controller_lista_del_personale.inserisci_utente(self.utente_test)
+
+        for i in range(50):
+            print("-----------UTENTE "+str(i+1)+"-------------------")
+            id= random.randint(100, 9999)
+            #print(id)
+            name= self.fake_data.first_name()
+            #print(name)
+            surname= self.fake_data.last_name()
+            #print(surname)
+            data_nascita= datetime.date(random.randint(1965, 2000), random.randint(1,12), random.randint(1,28))
+            data_nascita_split= str(data_nascita).split("-")
+            data_nascita= data_nascita_split[2]+"/"+data_nascita_split[1]+"/"+data_nascita_split[0]
+            #print(data_nascita)
+            city= self.fake_data.city()
+            #print(city)
+            CF= self.fake_data.ssn()
+            #print(CF)
+            data_inizio_lavoro= datetime.date(year= random.randint(int(data_nascita_split[0])+18, 2021), month= random.randint(1, 12), day= random.randint(1, 28))
+            data_inizio_lavoro_split= str(data_inizio_lavoro).split("-")
+            data_inizio_lavoro= data_inizio_lavoro_split[2]+"/"+data_inizio_lavoro_split[1]+"/"+data_inizio_lavoro_split[0]
+            #print(str(data_inizio_lavoro))
+            data_scadenza_lavoro= datetime.date(year= random.randint(int(data_inizio_lavoro_split[0])+1, int(data_inizio_lavoro_split[0])+5), month= random.randint(1, 12), day= random.randint(1, 28))
+            data_scadenza_lavoro_split= str(data_scadenza_lavoro).split("-")
+            data_scadenza_lavoro= data_scadenza_lavoro_split[2]+"/"+data_scadenza_lavoro_split[1]+"/"+data_scadenza_lavoro_split[0]
+            #print(data_scadenza_lavoro)
+            address= self.fake_data.address()
+            #print(address)
+            tipo_list= ["A", "D"]
+            tipo= random.choice(tipo_list)
+            #print(tipo)
+            phone_number= self.fake_data.phone_number()
+            #print(phone_number)
+            salary= random.randint(500, 2500)
+            #print(salary)
+            username= self.fake_data.name()
+            #print(username)
+            password= self.fake_data.password()
+            #print(password)
+            if tipo == "D":
+                utente_test= Utente(id, name, surname, data_nascita, city, CF, data_inizio_lavoro, data_scadenza_lavoro, tipo,address, phone_number, salary, None, None )
+            if tipo == "A":
+                utente_test= Utente(id, name, surname, data_nascita, city, CF, data_inizio_lavoro, data_scadenza_lavoro_split, tipo,address, phone_number, salary, username, password)
+            self.controller_lista_del_personale.inserisci_utente(self.utente_test)
+            self.assertTrue(self.utente_test in lista_del_personale)
+
         lista_del_personale = self.controller_lista_del_personale.get_lista_del_personale()
         lista_t1= len(lista_del_personale)
-        self.assertTrue(lista_t1==lista_t0+1)
-        self.assertTrue(self.utente_test in lista_del_personale)
+        self.assertTrue(lista_t1==lista_t0+50)
+ 
 
         #modifica di un utente
         self.assertFalse(self.controller_utente.get_nome() == "Edoardo")
