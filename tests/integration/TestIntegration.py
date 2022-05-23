@@ -29,7 +29,7 @@ import radar
 """
 
 
-class TestIntegration(unittest.TestCase):
+class TestIntegration_ultimo(unittest.TestCase):
 
     def setUp(self):
         #setup listadelpersonale e utente
@@ -151,9 +151,74 @@ class TestIntegration(unittest.TestCase):
  
 
         #modifica di un utente
-        self.assertFalse(self.controller_utente.get_nome() == "Edoardo")
-        self.controller_utente.set_nome("Edoardo")
-        self.assertTrue(self.controller_utente.get_nome() == "Edoardo")
+        controller_utente= ControllerUtente(utente_test)
+        for i in range(50):
+            print(i)
+
+            id= random.randint(100, 9999)
+            controller_utente.set_cod_utente(str(id))
+            self.assertTrue(controller_utente.get_cod_utente() == str(id))
+
+            name= self.fake_data.first_name()
+            controller_utente.set_nome(name)
+            self.assertTrue(controller_utente.get_nome() == name)
+
+            surname= self.fake_data.last_name()
+            controller_utente.set_cognome(surname)
+            self.assertTrue(controller_utente.get_cognome() == surname)
+
+            # tipo_list= ["A", "D"]
+            # tipo= random.choice(tipo_list)
+            # controller_utente.set_ruolo(tipo)
+            # self.assertTrue(controller_utente.get_ruolo()[0] == tipo)
+
+            flag = True
+            while flag:
+                city= self.fake_data.city()
+                if city.isalpha():
+                    flag=False
+            controller_utente.set_luogo_nascita(city)
+            self.assertTrue(controller_utente.get_luogo_nascita() == city)
+
+            CF= self.fake_data.ssn()
+            CF= CF+"11111"
+            controller_utente.set_cf(CF)
+            self.assertTrue(controller_utente.get_cf() == CF)
+
+            phone_number= random.randint(300000000, 3999999999)
+            print(phone_number)
+            controller_utente.set_telefono(str(phone_number))
+            self.assertTrue(controller_utente.get_telefono() == str(phone_number))
+
+            salary= random.randint(500, 2500)
+            controller_utente.set_stipendio(str(salary))
+            self.assertTrue(controller_utente.get_stipendio() == str(salary))
+
+            data_nascita= datetime.date(random.randint(1965, 2000), random.randint(1,12), random.randint(1,28))
+            data_nascita_split= str(data_nascita).split("-")
+            data_nascita= data_nascita_split[2]+"/"+data_nascita_split[1]+"/"+data_nascita_split[0]
+            self.assertFalse(self.controller_utente.get_data_nascita() == data_nascita)
+            self.controller_utente.set_data_nascita(data_nascita)
+            self.assertTrue(self.controller_utente.get_data_nascita() == data_nascita)
+
+            data_inizio_lavoro= datetime.date(year= random.randint(int(data_nascita_split[0])+18, 2021), month= random.randint(1, 12), day= random.randint(1, 28))
+            data_inizio_lavoro_split= str(data_inizio_lavoro).split("-")
+            data_inizio_lavoro= data_inizio_lavoro_split[2]+"/"+data_inizio_lavoro_split[1]+"/"+data_inizio_lavoro_split[0]
+            self.assertFalse(self.controller_utente.get_data_inizio_contratto() == data_inizio_lavoro)
+            self.controller_utente.set_data_inizio_contratto(data_inizio_lavoro)
+            self.assertTrue(self.controller_utente.get_data_inizio_contratto() == data_inizio_lavoro)
+
+            data_scadenza_lavoro= datetime.date(year= random.randint(int(data_inizio_lavoro_split[0])+1, int(data_inizio_lavoro_split[0])+5), month= random.randint(1, 12), day= random.randint(1, 28))
+            data_scadenza_lavoro_split= str(data_scadenza_lavoro).split("-")
+            data_scadenza_lavoro= data_scadenza_lavoro_split[2]+"/"+data_scadenza_lavoro_split[1]+"/"+data_scadenza_lavoro_split[0]
+            self.assertFalse(self.controller_utente.get_data_scadenza_contratto() == data_scadenza_lavoro)
+            self.controller_utente.set_data_scadenza_contratto(data_scadenza_lavoro)
+            self.assertTrue(self.controller_utente.get_data_scadenza_contratto() == data_scadenza_lavoro)
+
+            address= self.fake_data.address()
+            self.assertFalse(self.controller_utente.get_indirizzo() == address)
+            self.controller_utente.set_indirizzo(address)
+            self.assertTrue(self.controller_utente.get_indirizzo() == address)
 
         #refresh e salvataggio della lista
         #testo che se non salvo, con il refresh perdo le ultime modifiche
