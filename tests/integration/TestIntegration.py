@@ -167,11 +167,6 @@ class TestIntegration_ultimo(unittest.TestCase):
             controller_utente.set_cognome(surname)
             self.assertTrue(controller_utente.get_cognome() == surname)
 
-            # tipo_list= ["A", "D"]
-            # tipo= random.choice(tipo_list)
-            # controller_utente.set_ruolo(tipo)
-            # self.assertTrue(controller_utente.get_ruolo()[0] == tipo)
-
             flag = True
             while flag:
                 city= self.fake_data.city()
